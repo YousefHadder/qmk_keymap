@@ -8,10 +8,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # List of keymap json files to build
         file:
-        - yousefhaddder.json
-    # End of json file list
+        - yousefhadder.json
 
     steps:
       - name: Disable git safe directory checks
