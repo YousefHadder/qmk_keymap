@@ -1,8 +1,4 @@
 SRC += source.c
 DEFERRED_EXEC_ENABLE = yes
 
-VIA_ENABLE = yes
-VIAL_ENABLE = yes
-LTO_ENABLE = yes
-QMK_SETTINGS = no
 

@@ -139,6 +139,3 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 };
 #endif
 
-// Optional: Add config.h settings based on Vial settings
-// Tapping term: 175ms (from settings "4": 175)
-// #define TAPPING_TERM 175
