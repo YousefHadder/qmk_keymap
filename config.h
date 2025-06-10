@@ -1,10 +1,12 @@
 #pragma once
 
-//#define USE_MATRIX_I2C
-
-//#define QUICK_TAP_TERM 0
-//#define TAPPING_TERM 100
+#define QUICK_TAP_TERM 0
+#define TAPPING_TERM 100
 #define MAX_DEFERRED_EXECUTORS 10
+
+#define VIAL_KEYBOARD_UID {0x89, 0x36, 0x2A, 0xC7, 0xFA, 0xD8, 0x89, 0x45}
+#define VIAL_UNLOCK_COMBO_ROWS {0, 0}
+#define VIAL_UNLOCK_COMBO_COLS {0, 1}
 
 #ifdef RGBLIGHT_ENABLE
     #define RGBLIGHT_EFFECT_BREATHING

@@ -1,4 +1,8 @@
-SRC += source.c
 DEFERRED_EXEC_ENABLE = yes
+
+VIA_ENABLE         = yes
+VIAL_ENABLE        = yes
+VIALRGB_ENABLE     = yes
+ENCODER_MAP_ENABLE = yes
 
 
