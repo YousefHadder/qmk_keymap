@@ -10,6 +10,14 @@ enum custom_keycodes {
     CKC_I,
     CKC_O,
     CKC_P,
+    CKC_1,
+    CKC_2,
+    CKC_3,
+    CKC_4,
+    CKC_7,
+    CKC_8,
+    CKC_9,
+    CKC_0,
     SMTD_KEYCODES_END,
 };
 
@@ -38,9 +46,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_LAYER1] = LAYOUT_split_3x6_3_ex2(
      // -----------+-------+-------+-----------+-----------+---------+---------++--------------+--------------+----------------+---------------+---------------+-------+-------- //
-        KC_TRNS,  KC_BRID,    KC_BRIU,    KC_MPRV,    KC_MPLY,    KC_MNXT,    KC_NO,      KC_NO,      KC_VOLD,    KC_MUTE,    KC_VOLU,    KC_NO,  KC_NO, KC_NO,
+        KC_TRNS,  KC_BRID,  KC_BRIU,KC_MPRV,    KC_MPLY,    KC_MNXT,    KC_NO,   KC_NO,      KC_VOLD,    KC_MUTE,    KC_VOLU,    KC_NO,  KC_NO, KC_NO,
      // -----------+-------+-------+-----------+-----------+---------+---------++--------------+--------------+----------------+---------------+---------------+-------+-------- //
-        KC_LCTL,    KC_NO,  KC_NO,  KC_NO,      LCA(KC_F),  KC_NO,    KC_LALT,    KC_RALT,      KC_LEFT,       KC_DOWN,         KC_UP,          KC_RIGHT,       KC_NO,  KC_NO,
+        KC_CAPS,    KC_NO,  KC_NO,  KC_NO,      LCA(KC_F),  KC_NO,    KC_LALT,    KC_RALT,      KC_LEFT,       KC_DOWN,         KC_UP,          KC_RIGHT,       KC_NO,  KC_NO,
      // -----------+-------+-------+-----------+-----------+---------+---------++--------------+--------------+----------------+---------------+---------------+-------+-------- //
         KC_LSFT,    KC_NO,  KC_NO,  LCA(KC_C),  KC_NO,      KC_NO,                              LCA(KC_LEFT),  LCA(KC_DOWN),    LCA(KC_UP),     LCA(KC_RIGHT),  KC_NO,  KC_NO,
      // -----------+-------+-------+-----------+-----------+---------+---------++--------------+--------------+----------------+---------------+---------------+-------+-------- //
@@ -49,9 +57,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_LAYER2] = LAYOUT_split_3x6_3_ex2(
    // ---------+-----------+-----------+-----------+-----------+-----------+--------++-------------+-----------+-----------+-----------+-------+------------- //
-      KC_EQL,     KC_1,   KC_2,   KC_3,       KC_4,       KC_5,     KC_LCTL,    KC_RCTL,      KC_6,          KC_7,            KC_8,           KC_9,           KC_0,   KC_MINS,
+      KC_EQL,   CKC_1,       CKC_2,     CKC_3,      CKC_4,      KC_5,       KC_LCTL,    KC_RCTL,    KC_6,       CKC_7,      CKC_8,      CKC_9,  CKC_0, KC_MINS,
    // ---------+-----------+-----------+-----------+-----------+-----------+--------++-------------+-----------+-----------+-----------+-------+------------- //
-      KC_NO,    KC_NO,      KC_NO,      KC_NO,      KC_NO,      KC_NO,      KC_NO,      KC_NO,      KC_NO,      KC_NO,      KC_NO,      KC_NO,  KC_NO, KC_NO,
+      KC_CAPS,  KC_NO,      KC_NO,      KC_NO,      KC_NO,      KC_NO,      KC_NO,      KC_NO,      KC_NO,      KC_NO,      KC_NO,      KC_NO,  KC_NO, KC_NO,
    // ---------+-----------+-----------+-----------+-----------+-----------+--------++-------------+-----------+-----------+-----------+-------+------------- //
       KC_NO,    KC_NO,      KC_NO,      KC_NO,      KC_NO,      KC_NO,                              KC_NO,      KC_NO,      KC_NO,      KC_NO,  KC_NO, KC_NO,
    // ---------+-----------+-----------+-----------+-----------+-----------+--------++-------------+-----------+-----------+-----------+-------+------------- //
@@ -60,13 +68,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_LAYER3] = LAYOUT_split_3x6_3_ex2(
    // ---------+-----------+-----------+-----------+-----------+-----------+--------++---------+-----------+-------+-------+-------+------------- //
-        LSFT(KC_EQL), LSFT(KC_1), LSFT(KC_2), LSFT(KC_3), LSFT(KC_4), LSFT(KC_5), KC_N, KC_NO, LSFT(KC_6), LSFT(KC_7), LSFT(KC_8), LSFT(KC_9), LSFT(KC_0), LSFT(KC_MINS),
+      KC_NO,    KC_NO,      KC_NO,      KC_NO,      KC_NO,      KC_NO,      KC_NO,     KC_NO,   KC_NO,      KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,
    // ---------+-----------+-----------+-----------+-----------+-----------+--------++---------+-----------+-------+-------+-------+------------- //
       RGB_TOG,  RGB_HUI,    RGB_SAI,    RGB_VAI,    KC_NO,      KC_NO,      KC_NO,     KC_NO,   KC_NO,      KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,
    // ---------+-----------+-----------+-----------+-----------+-----------+--------++---------+-----------+-------+-------+-------+------------- //
       RGB_MOD,  RGB_HUD,    RGB_SAD,    RGB_VAD,    KC_NO,      KC_NO,                          KC_NO,      KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,
    // ---------+-----------+-----------+-----------+-----------+-----------+--------++---------+-----------+-------+-------+-------+------------- //
-                                                    QK_BOOT,    KC_TRNS,    KC_SPC,    KC_ENT,  KC_TRNS,    KC_RGUI
+                                                    QK_BOOT,    QK_MAKE,    KC_SPC,    KC_ENT,  KC_TRNS,    KC_RGUI
   )
 };
 #else
@@ -88,13 +96,21 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 void on_smtd_action(uint16_t keycode, smtd_action action, uint8_t tap_count) {
     switch (keycode) {
         SMTD_MT(CKC_Q, KC_Q, KC_LEFT_ALT)
+        SMTD_MT(CKC_1, KC_1, KC_LEFT_ALT)
         SMTD_MT(CKC_W, KC_W, KC_LEFT_SHIFT)
+        SMTD_MT(CKC_2, KC_2, KC_LEFT_SHIFT)
         SMTD_MT(CKC_E, KC_E, KC_LEFT_CTRL)
+        SMTD_MT(CKC_3, KC_3, KC_LEFT_CTRL)
         SMTD_MT(CKC_R, KC_R, KC_LEFT_GUI)
+        SMTD_MT(CKC_4, KC_4, KC_LEFT_GUI)
         SMTD_MT(CKC_P, KC_P, KC_LEFT_ALT)
+        SMTD_MT(CKC_0, KC_0, KC_LEFT_ALT)
         SMTD_MT(CKC_O, KC_O, KC_LEFT_SHIFT)
+        SMTD_MT(CKC_9, KC_9, KC_LEFT_SHIFT)
         SMTD_MT(CKC_I, KC_I, KC_LEFT_CTRL)
+        SMTD_MT(CKC_8, KC_8, KC_LEFT_CTRL)
         SMTD_MT(CKC_U, KC_U, KC_LEFT_GUI)
+        SMTD_MT(CKC_7, KC_7, KC_LEFT_GUI)
     }
 }
 
