@@ -49,7 +49,7 @@ jobs:
         mkdir -p qmk_firmware/keyboards/crkbd/keymaps/vial
 
         # Copy your keymap files exactly as they are
-        cp keymap.c qmk_firmware/keyboards/crkbd/keymaps/vial/
+        cp source.c qmk_firmware/keyboards/crkbd/keymaps/vial/
         cp config.h qmk_firmware/keyboards/crkbd/keymaps/vial/ || echo "config.h not found, skipping"
         cp rules.mk qmk_firmware/keyboards/crkbd/keymaps/vial/ || echo "rules.mk not found, skipping"
         cp sm_td.h qmk_firmware/keyboards/crkbd/keymaps/vial/ || echo "sm_td.h not found, skipping"
