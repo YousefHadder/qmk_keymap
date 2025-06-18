@@ -1,5 +1,6 @@
 DEFERRED_EXEC_ENABLE = yes
 
+COMBO_ENABLE	   = yes
 VIA_ENABLE         = yes
 VIAL_ENABLE        = yes
 VIALRGB_ENABLE     = yes

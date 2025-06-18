@@ -1,8 +1,13 @@
 #pragma once
 
-#define QUICK_TAP_TERM 0
-#define TAPPING_TERM 100
+//#define USE_MATRIX_I2C
+//#define QUICK_TAP_TERM 0
+
+#define TAPPING_TERM 170
 #define MAX_DEFERRED_EXECUTORS 10
+
+#define COMBO_COUNT 1  // Adjust based on how many combos you have
+#define COMBO_TERM 50  // Time window in milliseconds (default is usually 50ms)
 
 #define VIAL_KEYBOARD_UID {0x89, 0x36, 0x2A, 0xC7, 0xFA, 0xD8, 0x89, 0x45}
 #define VIAL_UNLOCK_COMBO_ROWS {0, 0}

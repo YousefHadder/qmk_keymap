@@ -19,6 +19,13 @@ enum custom_keycodes {
     CKC_9,
     CKC_0,
     SMTD_KEYCODES_END,
+    CAPS_TOGGLE,  // Add this after all SMTD keycodes
+};
+
+const uint16_t PROGMEM caps_combo[] = {KC_BSPC, KC_SPC, COMBO_END};  // Both thumb keys
+
+combo_t key_combos[COMBO_COUNT] = {
+    COMBO(caps_combo, CAPS_TOGGLE)
 };
 
 #include "sm_td.h"
@@ -88,9 +95,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (!process_smtd(keycode, record)) {
         return false;
     }
-    // your code here
-
-   return true;
+    switch (keycode) {
+        case CAPS_TOGGLE:
+            if (record->event.pressed) {
+                tap_code(KC_CAPS);
+            }
+            return false;
+    }
+    return true;
 }
 
 void on_smtd_action(uint16_t keycode, smtd_action action, uint8_t tap_count) {
@@ -103,14 +115,14 @@ void on_smtd_action(uint16_t keycode, smtd_action action, uint8_t tap_count) {
         SMTD_MT(CKC_3, KC_3, KC_LEFT_CTRL)
         SMTD_MT(CKC_R, KC_R, KC_LEFT_GUI)
         SMTD_MT(CKC_4, KC_4, KC_LEFT_GUI)
-        SMTD_MT(CKC_P, KC_P, KC_LEFT_ALT)
-        SMTD_MT(CKC_0, KC_0, KC_LEFT_ALT)
-        SMTD_MT(CKC_O, KC_O, KC_LEFT_SHIFT)
-        SMTD_MT(CKC_9, KC_9, KC_LEFT_SHIFT)
-        SMTD_MT(CKC_I, KC_I, KC_LEFT_CTRL)
-        SMTD_MT(CKC_8, KC_8, KC_LEFT_CTRL)
-        SMTD_MT(CKC_U, KC_U, KC_LEFT_GUI)
-        SMTD_MT(CKC_7, KC_7, KC_LEFT_GUI)
+        SMTD_MT(CKC_P, KC_P, KC_RIGHT_ALT)
+        SMTD_MT(CKC_0, KC_0, KC_RIGHT_ALT)
+        SMTD_MT(CKC_O, KC_O, KC_RIGHT_SHIFT)
+        SMTD_MT(CKC_9, KC_9, KC_RIGHT_SHIFT)
+        SMTD_MT(CKC_I, KC_I, KC_RIGHT_CTRL)
+        SMTD_MT(CKC_8, KC_8, KC_RIGHT_CTRL)
+        SMTD_MT(CKC_U, KC_U, KC_RIGHT_GUI)
+        SMTD_MT(CKC_7, KC_7, KC_RIGHT_GUI)
     }
 }
 
