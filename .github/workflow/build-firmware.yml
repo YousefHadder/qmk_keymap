@@ -1,0 +1,74 @@
+# GitHub Action to compile QMK firmware for a Corne keyboard
+#
+# How to use:
+# 1. Create a directory in your repository named `.github/workflows`
+# 2. Create a new file inside that directory named `build-firmware.yml`
+# 3. Copy and paste the contents of this file into `build-firmware.yml`
+# 4. **Important:** Update the placeholder values in the "Compile Firmware" step
+#    to match your specific keyboard and keymap folder name.
+# 5. Commit and push the changes. The action will run on the next push.
+
+name: 'Build Corne Firmware'
+
+on:
+  # Triggers the workflow on push events but only for the main branch
+  push:
+    branches: [ main, master ]
+
+  # Allows you to run this workflow manually from the Actions tab on GitHub
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out your repository code
+      # This includes your keymap files. The `submodules: 'recursive'` is
+      # important if your keymap has dependencies managed as submodules.
+      - name: 'Check out repository'
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+
+      # Step 2: Set up the QMK build environment
+      # This uses the official qmk/qmk_setup action to install all
+      # necessary dependencies and clone the main qmk_firmware repository.
+      - name: 'Set up QMK'
+        uses: qmk/qmk_setup@v1
+
+      # Step 3: Compile the firmware
+      # This is the core step. It runs the `qmk compile` command.
+      #
+      # ----------------- VERY IMPORTANT -----------------
+      # You MUST change the `-kb` and `-km` values to match your setup.
+      #
+      # -kb: Your keyboard's path in QMK. For the Corne, `crkbd/rev1` is common.
+      #      This might also just be `crkbd` depending on your specific model.
+      # -km: The name of YOUR keymap folder in this repository.
+      #
+      # The command assumes your keymap folder is at the root of your repository.
+      # It creates a symbolic link to it inside the QMK directory.
+      # ----------------------------------------------------
+      - name: 'Compile Firmware'
+        run: |
+          # The keymap name should be the name of the folder in your repo that contains your keymap.c, rules.mk, etc.
+          KEYMAP_NAME="default" # <-- CHANGE THIS
+          KEYBOARD_PATH="crkbd/rev1"             # <-- CHANGE THIS if needed
+
+          # Link your keymap folder into the QMK keyboards directory
+          ln -s "$GITHUB_WORKSPACE" "/usr/share/qmk_firmware/keyboards/$KEYBOARD_PATH/keymaps/$KEYMAP_NAME"
+
+          # Compile the firmware
+          qmk compile -kb "$KEYBOARD_PATH" -km "$KEYMAP_NAME"
+
+      # Step 4: Upload the compiled firmware as a build artifact
+      # This makes the final .uf2 file available for download from the
+      # GitHub Actions run page. The file can also be a .hex or .bin depending
+      # on your keyboard's microcontroller.
+      - name: 'Upload Firmware Artifact'
+        uses: actions/upload-artifact@v4
+        with:
+          name: corne-firmware # The name of the downloadable artifact zip file
+          path: /usr/share/qmk_firmware/*.uf2 # Path to the compiled file. Change .uf2 if your board uses .hex, .bin, etc.
+
