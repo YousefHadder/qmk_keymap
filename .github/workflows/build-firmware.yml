@@ -48,7 +48,7 @@ jobs:
           # KEYBOARD_PATH: The path to your keyboard in QMK. For a Corne, `crkbd/rev1` is common.
           # ----------------------------------------------------
           KEYMAP_NAME="default" # <-- CHANGE THIS
-          KEYBOARD_PATH="crkbd/rev1"             # <-- CHANGE THIS if needed
+          KEYBOARD_PATH="crkbd"             # <-- CHANGE THIS if needed
 
           # Link your keymap folder (from your repo checkout) into the QMK keyboards directory inside the container.
           # The QMK firmware source is at /qmk_firmware in the container.
