@@ -20,55 +20,45 @@ on:
 
 jobs:
   build:
+    # Use the official QMK CLI Docker container which has the build environment pre-configured.
     runs-on: ubuntu-latest
+    container: ghcr.io/qmk/qmk_cli
 
     steps:
       # Step 1: Check out your repository code
-      # This includes your keymap files. The `submodules: 'recursive'` is
-      # important if your keymap has dependencies managed as submodules.
+      # This makes your keymap folder available to the workflow.
       - name: 'Check out repository'
         uses: actions/checkout@v4
-        with:
-          submodules: 'recursive'
 
-      # Step 2: Set up the QMK build environment
-      # This uses the official qmk/qmk_setup action to install all
-      # necessary dependencies and clone the main qmk_firmware repository.
-      - name: 'Set up QMK'
-        uses: qmk/qmk_setup@v1
-
-      # Step 3: Compile the firmware
-      # This is the core step. It runs the `qmk compile` command.
+      # Step 2: Compile the firmware
+      # The QMK environment is already set up inside the Docker container.
+      # This step links your local keymap folder into the container's QMK firmware
+      # directory and then runs the compile command.
       #
       # ----------------- VERY IMPORTANT -----------------
-      # You MUST change the `-kb` and `-km` values to match your setup.
+      # You MUST change the KEYMAP_NAME and KEYBOARD_PATH to match your setup.
       #
-      # -kb: Your keyboard's path in QMK. For the Corne, `crkbd/rev1` is common.
-      #      This might also just be `crkbd` depending on your specific model.
-      # -km: The name of YOUR keymap folder in this repository.
-      #
-      # The command assumes your keymap folder is at the root of your repository.
-      # It creates a symbolic link to it inside the QMK directory.
+      # KEYMAP_NAME:   The name of YOUR keymap folder in this repository.
+      # KEYBOARD_PATH: The path to your keyboard in QMK. For a Corne, `crkbd/rev1` is common.
       # ----------------------------------------------------
       - name: 'Compile Firmware'
         run: |
-          # The keymap name should be the name of the folder in your repo that contains your keymap.c, rules.mk, etc.
-          KEYMAP_NAME="default" # <-- CHANGE THIS
+          # Set your keymap and keyboard path here
+          KEYMAP_NAME="YOUR_KEYMAP_FOLDER_NAME" # <-- CHANGE THIS
           KEYBOARD_PATH="crkbd/rev1"             # <-- CHANGE THIS if needed
 
-          # Link your keymap folder into the QMK keyboards directory
-          ln -s "$GITHUB_WORKSPACE" "/usr/share/qmk_firmware/keyboards/$KEYBOARD_PATH/keymaps/$KEYMAP_NAME"
+          # Link your keymap folder (from your repo checkout) into the QMK keyboards directory inside the container.
+          # The QMK firmware source is at /qmk_firmware in the container.
+          # Your checked-out code is at $GITHUB_WORKSPACE.
+          ln -s "$GITHUB_WORKSPACE" "/qmk_firmware/keyboards/$KEYBOARD_PATH/keymaps/$KEYMAP_NAME"
 
-          # Compile the firmware
+          # Run the QMK compile command
           qmk compile -kb "$KEYBOARD_PATH" -km "$KEYMAP_NAME"
 
-      # Step 4: Upload the compiled firmware as a build artifact
-      # This makes the final .uf2 file available for download from the
-      # GitHub Actions run page. The file can also be a .hex or .bin depending
-      # on your keyboard's microcontroller.
+      # Step 3: Upload the compiled firmware as a build artifact
+      # This makes the final .uf2 file available for download from the GitHub Actions run summary page.
       - name: 'Upload Firmware Artifact'
         uses: actions/upload-artifact@v4
         with:
           name: corne-firmware # The name of the downloadable artifact zip file
-          path: /usr/share/qmk_firmware/*.uf2 # Path to the compiled file. Change .uf2 if your board uses .hex, .bin, etc.
-
+          path: /qmk_firmware/*.uf2 # Path to the compiled file inside the container. Change .uf2 if your board uses .hex, .bin, etc.
