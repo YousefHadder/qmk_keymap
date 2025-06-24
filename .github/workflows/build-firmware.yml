@@ -34,17 +34,20 @@ jobs:
       # The QMK environment is already set up inside the Docker container.
       # This step links your local keymap folder into the container's QMK firmware
       # directory and then runs the compile command.
-      #
-      # ----------------- VERY IMPORTANT -----------------
-      # You MUST change the KEYMAP_NAME and KEYBOARD_PATH to match your setup.
-      #
-      # KEYMAP_NAME:   The name of YOUR keymap folder in this repository.
-      # KEYBOARD_PATH: The path to your keyboard in QMK. For a Corne, `crkbd/rev1` is common.
-      # ----------------------------------------------------
       - name: 'Compile Firmware'
         run: |
-          # Set your keymap and keyboard path here
-          KEYMAP_NAME="default" # <-- CHANGE THIS
+          # Run qmk setup to clone the qmk_firmware repo and create the necessary directory structure.
+          # The '-y' flag automatically answers yes to all prompts.
+          qmk setup -y
+
+          # ----------------- VERY IMPORTANT -----------------
+          # You MUST change the KEYMAP_NAME and KEYBOARD_PATH to match your setup.
+          # The error message suggests KEYMAP_NAME might not have been updated.
+          #
+          # KEYMAP_NAME:   The name of YOUR keymap folder in this repository.
+          # KEYBOARD_PATH: The path to your keyboard in QMK. For a Corne, `crkbd/rev1` is common.
+          # ----------------------------------------------------
+          KEYMAP_NAME="YOUR_KEYMAP_FOLDER_NAME" # <-- CHANGE THIS
           KEYBOARD_PATH="crkbd/rev1"             # <-- CHANGE THIS if needed
 
           # Link your keymap folder (from your repo checkout) into the QMK keyboards directory inside the container.
