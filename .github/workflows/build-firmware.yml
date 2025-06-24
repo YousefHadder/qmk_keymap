@@ -64,4 +64,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: corne-firmware # The name of the downloadable artifact zip file
-          path: /qmk_firmware/*.uf2 # Path to the compiled file inside the container. Change .uf2 if your board uses .hex, .bin, etc.
+          path: /qmk_firmware/*.hex # Path to the compiled file inside the container. Change .uf2 if your board uses .hex, .bin, etc.
