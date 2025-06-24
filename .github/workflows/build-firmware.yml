@@ -44,7 +44,7 @@ jobs:
       - name: 'Compile Firmware'
         run: |
           # Set your keymap and keyboard path here
-          KEYMAP_NAME="YOUR_KEYMAP_FOLDER_NAME" # <-- CHANGE THIS
+          KEYMAP_NAME="default" # <-- CHANGE THIS
           KEYBOARD_PATH="crkbd/rev1"             # <-- CHANGE THIS if needed
 
           # Link your keymap folder (from your repo checkout) into the QMK keyboards directory inside the container.
