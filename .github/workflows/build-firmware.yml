@@ -47,7 +47,7 @@ jobs:
           # KEYMAP_NAME:   The name of YOUR keymap folder in this repository.
           # KEYBOARD_PATH: The path to your keyboard in QMK. For a Corne, `crkbd/rev1` is common.
           # ----------------------------------------------------
-          KEYMAP_NAME="YOUR_KEYMAP_FOLDER_NAME" # <-- CHANGE THIS
+          KEYMAP_NAME="default" # <-- CHANGE THIS
           KEYBOARD_PATH="crkbd/rev1"             # <-- CHANGE THIS if needed
 
           # Link your keymap folder (from your repo checkout) into the QMK keyboards directory inside the container.
