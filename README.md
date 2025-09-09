@@ -2,6 +2,18 @@
 
 This document shows the key mappings for all layers of the Corne keyboard layout.
 
+## Usage
+
+To regenerate this keymap table, run:
+```bash
+python3 generate_keymap_table.py > README.md
+```
+
+Or use the executable script directly:
+```bash
+./generate_keymap_table.py > README.md
+```
+
 ## Legend
 
 - **Home Row Modifiers**: Letters with modifiers (e.g., `Q/Alt` = Q on tap, Alt on hold)
