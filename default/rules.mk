@@ -1,9 +1,5 @@
-DEFERRED_EXEC_ENABLE = yes
-
-COMBO_ENABLE	   = yes
 VIA_ENABLE         = yes
 VIAL_ENABLE        = yes
 VIALRGB_ENABLE     = yes
 ENCODER_MAP_ENABLE = yes
-
-
+LTO_ENABLE         = yes

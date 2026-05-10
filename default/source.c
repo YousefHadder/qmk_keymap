@@ -1,136 +1,176 @@
+// Copyright 2024 Yousef Hadder
+// SPDX-License-Identifier: GPL-2.0-or-later
+//
+// Corne v4.1 keymap - ported from Skull 34-key layout
+// Extra keys (outer columns, extra thumbs, ex2 keys) are KC_NO
+//
+// Features:
+// - Home row mods on top row (QWERTY positions)
+// - 5 layers: Base, Media/Nav, Numbers, Symbols, Right-hand mods
+// - Combos configured via Vial GUI
+
 #include QMK_KEYBOARD_H
 
-enum custom_keycodes {
-    SMTD_KEYCODES_BEGIN = SAFE_RANGE,
-    CKC_Q, // reads as C(ustom) + KC_A, but you may give any name here
-    CKC_W,
-    CKC_E,
-    CKC_R,
-    CKC_U,
-    CKC_I,
-    CKC_O,
-    CKC_P,
-    CKC_1,
-    CKC_2,
-    CKC_3,
-    CKC_4,
-    CKC_7,
-    CKC_8,
-    CKC_9,
-    CKC_0,
-    SMTD_KEYCODES_END,
-    CAPS_TOGGLE,  // Add this after all SMTD keycodes
-};
-
-const uint16_t PROGMEM caps_combo[] = {KC_BSPC, KC_SPC, COMBO_END};  // Both thumb keys
-
-combo_t key_combos[COMBO_COUNT] = {
-    COMBO(caps_combo, CAPS_TOGGLE)
-};
-
-#include "sm_td.h"
-
-// Layer names for clarity
+// Layer definitions
 enum layers {
     _BASE = 0,
-    _LAYER1 = 1,
-    _LAYER2 = 2,
-    _LAYER3 = 3
+    _MEDIA_NAV,
+    _NUMBERS,
+    _SYMBOLS,
+    _RMOD
 };
 
-#ifdef LAYOUT_split_3x6_3_ex2
+// Hyper key (Ctrl+Shift+Alt+Cmd)
+#define MT_HYPR_ESC MT(MOD_LCTL | MOD_LSFT | MOD_LALT | MOD_LGUI, KC_ESC)
+
+// Home row mods - top row
+// Left hand
+#define HM_Q LALT_T(KC_Q)
+#define HM_W LSFT_T(KC_W)
+#define HM_E LCTL_T(KC_E)
+#define HM_R LGUI_T(KC_R)
+
+// Right hand
+#define HM_U RGUI_T(KC_U)
+#define HM_I RCTL_T(KC_I)
+#define HM_O RSFT_T(KC_O)
+#define HM_P RALT_T(KC_P)
+
+// Layer-tap keys
+#define LT_Z LT(_MEDIA_NAV, KC_Z)
+#define LT_SCLN LT(_RMOD, KC_SCLN)
+#define LT_BSPC LT(_NUMBERS, KC_BSPC)
+#define LT_SPC LT(_SYMBOLS, KC_SPC)
+
+// Rectangle window management shortcuts (macOS)
+#define RECT_FL LALT(LCTL(KC_F))      // Fullscreen
+#define RECT_LH LALT(LCTL(KC_LEFT))   // Left half
+#define RECT_RH LALT(LCTL(KC_RIGHT))  // Right half
+#define RECT_TH LALT(LCTL(KC_UP))     // Top half
+#define RECT_BH LALT(LCTL(KC_DOWN))   // Bottom half
+#define RECT_EN LALT(LCTL(KC_ENT))    // Enter (maximize)
+#define RECT_MV LALT(LCTL(LGUI(KC_LEFT))) // Move to display
+#define RECT_CE LALT(LCTL(KC_C))      // Center
+
+// Shorthand for empty extra keys
+#define _x_ KC_NO
+
+// clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-  [_BASE] = LAYOUT_split_3x6_3_ex2(
-     // -----------+-------+-------+-------+-------+--------+---------------++-------------+-------+-------+---------+-------+---------+-------- //
-        KC_TAB,     CKC_Q,  CKC_W,  CKC_E,  CKC_R,  KC_T,    LSFT(KC_9),        LSFT(KC_0), KC_Y,   CKC_U,  CKC_I,    CKC_O,  CKC_P,    KC_BSLS,
-     // -----------+-------+-------+-------+-------+--------+---------------++-------------+-------+-------+---------+-------+---------+-------- //
-        LCTL(KC_S), KC_A,   KC_S,   KC_D,   KC_F,   KC_G,    KC_LBRC,           KC_RBRC,    KC_H,   KC_J,   KC_K,     KC_L,   KC_SCLN,  KC_QUOT,
-     // -----------+-------+-------+-------+-------+--------+---------------++-------------+-------+-------+---------+-------+---------+-------- //
-        MO(1),      KC_Z,   KC_X,   KC_C,   KC_V,   KC_B,                                   KC_N,   KC_M,   KC_COMM,  KC_DOT, KC_SLSH,  KC_GRV,
-     // -----------+-------+-------+-------+-------+--------+---------------++-------------+-------+-------+---------+-------+---------+-------- //
-                                            MO(2),  KC_BSPC, ALL_T(KC_ESC),     KC_ENT,     KC_SPC, MO(3)
-  ),
+    /*
+     * Layer 0: Base (QWERTY with home row mods on top row)
+     * Extra keys (outer col, ex2, 3rd thumb) are empty.
+     *
+     *       ┌─────┬─────┬─────┬─────┬─────┐           ┌─────┬─────┬─────┬─────┬─────┐
+     * ┌───┐ │Q/Alt│W/Sft│E/Ctl│R/Gui│  T  │ ┌─┐ ┌─┐ │  Y  │U/Gui│I/Ctl│O/Sft│P/Alt│ ┌───┐
+     * │   │ ├─────┼─────┼─────┼─────┼─────┤ │ │ │ │ ├─────┼─────┼─────┼─────┼─────┤ │   │
+     * │   │ │  A  │  S  │  D  │  F  │  G  │ │ │ │ │ │  H  │  J  │  K  │  L  │;/L4 │ │   │
+     * └───┘ ├─────┼─────┼─────┼─────┼─────┤ └─┘ └─┘ ├─────┼─────┼─────┼─────┼─────┤ └───┘
+     *       │Z/L1 │  X  │  C  │  V  │  B  │           │  N  │  M  │  ,  │  .  │  /  │
+     *       └─────┴─────┴─────┴─────┴─────┘           └─────┴─────┴─────┴─────┴─────┘
+     *                   ┌─────┬─────┬─────┐           ┌─────┬─────┬─────┐
+     *                   │     │Bs/L2│Esc/H│           │ Ent │Sp/L3│     │
+     *                   └─────┴─────┴─────┘           └─────┴─────┴─────┘
+     */
+    [_BASE] = LAYOUT_split_3x6_3_ex2(
+        _x_,  HM_Q,    HM_W,    HM_E,    HM_R,    KC_T,    _x_,        _x_,     KC_Y,    HM_U,    HM_I,    HM_O,    HM_P,    _x_,
+        _x_,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    _x_,        _x_,     KC_H,    KC_J,    KC_K,    KC_L,    LT_SCLN, _x_,
+        _x_,  LT_Z,    KC_X,    KC_C,    KC_V,    KC_B,                          KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, _x_,
+                                          _x_,  LT_BSPC, MT_HYPR_ESC,    KC_ENT,  LT_SPC,  _x_
+    ),
 
-  [_LAYER1] = LAYOUT_split_3x6_3_ex2(
-     // -----------+-------+-------+-----------+-----------+---------+---------++--------------+--------------+----------------+---------------+---------------+-------+-------- //
-        KC_TRNS,  KC_BRID,  KC_BRIU,KC_MPRV,    KC_MPLY,    KC_MNXT,    KC_NO,   KC_NO,      KC_VOLD,    KC_MUTE,    KC_VOLU,    KC_NO,  KC_NO, KC_NO,
-     // -----------+-------+-------+-----------+-----------+---------+---------++--------------+--------------+----------------+---------------+---------------+-------+-------- //
-        KC_CAPS,    KC_NO,  KC_NO,  KC_NO,      LCA(KC_F),  KC_NO,    KC_LALT,    KC_RALT,      KC_LEFT,       KC_DOWN,         KC_UP,          KC_RIGHT,       KC_NO,  KC_NO,
-     // -----------+-------+-------+-----------+-----------+---------+---------++--------------+--------------+----------------+---------------+---------------+-------+-------- //
-        KC_LSFT,    KC_NO,  KC_NO,  LCA(KC_C),  KC_NO,      KC_NO,                              LCA(KC_LEFT),  LCA(KC_DOWN),    LCA(KC_UP),     LCA(KC_RIGHT),  KC_NO,  KC_NO,
-     // -----------+-------+-------+-----------+-----------+---------+---------++--------------+--------------+----------------+---------------+---------------+-------+-------- //
-                                                KC_LGUI,    KC_TRNS,  KC_SPC,     LCA(KC_ENT),  LCAG(KC_LEFT), LCAG(KC_RIGHT)
-  ),
+    /*
+     * Layer 1: Media/Navigation (accessed via Z hold)
+     *
+     *       ┌─────┬─────┬─────┬─────┬─────┐           ┌─────┬─────┬─────┬─────┬─────┐
+     * ┌───┐ │Bri- │Bri+ │Prev │Play │Next │ ┌─┐ ┌─┐ │Vol- │Mute │Vol+ │     │  \  │ ┌───┐
+     * │   │ ├─────┼─────┼─────┼─────┼─────┤ │ │ │ │ ├─────┼─────┼─────┼─────┼─────┤ │   │
+     * │   │ │     │     │     │RectF│     │ │ │ │ │ │ ←   │  ↓  │  ↑  │  →  │  '  │ │   │
+     * └───┘ ├─────┼─────┼─────┼─────┼─────┤ └─┘ └─┘ ├─────┼─────┼─────┼─────┼─────┤ └───┘
+     *       │█████│Shift│RectC│     │     │           │RctLH│RctBH│RctTH│RctRH│  `  │
+     *       └─────┴─────┴─────┴─────┴─────┘           └─────┴─────┴─────┴─────┴─────┘
+     *                   ┌─────┬─────┬─────┐           ┌─────┬─────┬─────┐
+     *                   │     │     │Space│           │RctEN│RctMV│     │
+     *                   └─────┴─────┴─────┘           └─────┴─────┴─────┘
+     */
+    [_MEDIA_NAV] = LAYOUT_split_3x6_3_ex2(
+        _x_,  KC_BRID, KC_BRIU, KC_MPRV, KC_MPLY, KC_MNXT, _x_,        _x_,     KC_VOLD, KC_MUTE, KC_VOLU, XXXXXXX, KC_BSLS, _x_,
+        _x_,  XXXXXXX, XXXXXXX, XXXXXXX, RECT_FL, XXXXXXX, _x_,        _x_,     KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, KC_QUOT, _x_,
+        _x_,  _______, KC_LSFT, RECT_CE, _______, _______,                        RECT_LH, RECT_BH, RECT_TH, RECT_RH, KC_GRV,  _x_,
+                                          _x_,  _______, KC_SPC,        RECT_EN, RECT_MV, _x_
+    ),
 
-  [_LAYER2] = LAYOUT_split_3x6_3_ex2(
-   // ---------+-----------+-----------+-----------+-----------+-----------+--------++-------------+-----------+-----------+-----------+-------+------------- //
-      KC_EQL,   CKC_1,       CKC_2,     CKC_3,      CKC_4,      KC_5,       KC_LCTL,    KC_RCTL,    KC_6,       CKC_7,      CKC_8,      CKC_9,  CKC_0, KC_MINS,
-   // ---------+-----------+-----------+-----------+-----------+-----------+--------++-------------+-----------+-----------+-----------+-------+------------- //
-      KC_CAPS,  KC_NO,      KC_NO,      KC_NO,      KC_NO,      KC_NO,      KC_NO,      KC_NO,      KC_NO,      KC_NO,      KC_NO,      KC_NO,  KC_NO, KC_NO,
-   // ---------+-----------+-----------+-----------+-----------+-----------+--------++-------------+-----------+-----------+-----------+-------+------------- //
-      KC_NO,    KC_NO,      KC_NO,      KC_NO,      KC_NO,      KC_NO,                              KC_NO,      KC_NO,      KC_NO,      KC_NO,  KC_NO, KC_NO,
-   // ---------+-----------+-----------+-----------+-----------+-----------+--------++-------------+-----------+-----------+-----------+-------+------------- //
-                                                    KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS
-  ),
+    /*
+     * Layer 2: Numbers (accessed via Backspace hold)
+     *
+     *       ┌─────┬─────┬─────┬─────┬─────┐           ┌─────┬─────┬─────┬─────┬─────┐
+     * ┌───┐ │  1  │2/Sft│3/Ctl│4/Gui│  5  │ ┌─┐ ┌─┐ │  6  │7/Gui│8/Ctl│9/Sft│  0  │ ┌───┐
+     * │   │ ├─────┼─────┼─────┼─────┼─────┤ │ │ │ │ ├─────┼─────┼─────┼─────┼─────┤ │   │
+     * │   │ │  =  │  -  │  '  │Ctl+B│     │ │ │ │ │ │     │     │     │     │     │ │   │
+     * └───┘ ├─────┼─────┼─────┼─────┼─────┤ └─┘ └─┘ ├─────┼─────┼─────┼─────┼─────┤ └───┘
+     *       │ MO1 │     │     │     │     │           │     │     │  ,  │  .  │     │
+     *       └─────┴─────┴─────┴─────┴─────┘           └─────┴─────┴─────┴─────┴─────┘
+     *                   ┌─────┬─────┬─────┐           ┌─────┬─────┬─────┐
+     *                   │     │█████│Space│           │ Ent │RAlt │     │
+     *                   └─────┴─────┴─────┘           └─────┴─────┴─────┘
+     */
+    [_NUMBERS] = LAYOUT_split_3x6_3_ex2(
+        _x_,  KC_1,    LSFT_T(KC_2), LCTL_T(KC_3), LGUI_T(KC_4), KC_5,    _x_,    _x_,     KC_6,    RGUI_T(KC_7), RCTL_T(KC_8), RSFT_T(KC_9), KC_0,    _x_,
+        _x_,  KC_EQL,  KC_MINS,      KC_QUOT,      LCTL(KC_B),   _______, _x_,    _x_,     XXXXXXX, XXXXXXX,      XXXXXXX,      XXXXXXX,      XXXXXXX, _x_,
+        _x_,  MO(_MEDIA_NAV), _______, _______,    _______,      _______,                   XXXXXXX, XXXXXXX,      KC_COMM,      KC_DOT,       XXXXXXX, _x_,
+                                          _x_,  _______,  KC_SPC,        KC_ENT,  KC_RALT, _x_
+    ),
 
-  [_LAYER3] = LAYOUT_split_3x6_3_ex2(
-   // ---------+-----------+-----------+-----------+-----------+-----------+--------++---------+-----------+-------+-------+-------+------------- //
-      KC_NO,    KC_NO,      KC_NO,      KC_NO,      KC_NO,      KC_NO,      KC_NO,     KC_NO,   KC_NO,      KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,
-   // ---------+-----------+-----------+-----------+-----------+-----------+--------++---------+-----------+-------+-------+-------+------------- //
-      RGB_TOG,  RGB_HUI,    RGB_SAI,    RGB_VAI,    KC_NO,      KC_NO,      KC_NO,     KC_NO,   KC_NO,      KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,
-   // ---------+-----------+-----------+-----------+-----------+-----------+--------++---------+-----------+-------+-------+-------+------------- //
-      RGB_MOD,  RGB_HUD,    RGB_SAD,    RGB_VAD,    KC_NO,      KC_NO,                          KC_NO,      KC_NO,  KC_NO,  KC_NO,  KC_NO,  KC_NO,
-   // ---------+-----------+-----------+-----------+-----------+-----------+--------++---------+-----------+-------+-------+-------+------------- //
-                                                    QK_BOOT,    QK_MAKE,    KC_SPC,    KC_ENT,  KC_TRNS,    KC_RGUI
-  )
+    /*
+     * Layer 3: Symbols (accessed via Space hold)
+     *
+     *       ┌─────┬─────┬─────┬─────┬─────┐           ┌─────┬─────┬─────┬─────┬─────┐
+     * ┌───┐ │  !  │  @  │  #  │  $  │  %  │ ┌─┐ ┌─┐ │  ^  │  &  │  *  │  (  │  -  │ ┌───┐
+     * │   │ ├─────┼─────┼─────┼─────┼─────┤ │ │ │ │ ├─────┼─────┼─────┼─────┼─────┤ │   │
+     * │   │ │     │     │  {  │  [  │  (  │ │ │ │ │ │  )  │  ]  │  }  │     │  =  │ │   │
+     * └───┘ ├─────┼─────┼─────┼─────┼─────┤ └─┘ └─┘ ├─────┼─────┼─────┼─────┼─────┤ └───┘
+     *       │     │     │     │     │     │           │     │     │     │     │     │
+     *       └─────┴─────┴─────┴─────┴─────┘           └─────┴─────┴─────┴─────┴─────┘
+     *                   ┌─────┬─────┬─────┐           ┌─────┬─────┬─────┐
+     *                   │     │     │     │           │     │█████│     │
+     *                   └─────┴─────┴─────┘           └─────┴─────┴─────┘
+     */
+    [_SYMBOLS] = LAYOUT_split_3x6_3_ex2(
+        _x_,  KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC, _x_,        _x_,     KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_MINS, _x_,
+        _x_,  XXXXXXX, XXXXXXX, KC_LCBR, KC_LBRC, KC_LPRN, _x_,        _x_,     KC_RPRN, KC_RBRC, KC_RCBR, XXXXXXX, KC_EQL,  _x_,
+        _x_,  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                       XXXXXXX, _______, _______, _______, XXXXXXX, _x_,
+                                          _x_,  XXXXXXX, _______,       _______, _______, _x_
+    ),
+
+    /*
+     * Layer 4: Right-hand mods (accessed via ; hold)
+     *
+     *       ┌─────┬─────┬─────┬─────┬─────┐           ┌─────┬─────┬─────┬─────┬─────┐
+     * ┌───┐ │ Tab │     │     │     │     │ ┌─┐ ┌─┐ │     │     │     │     │     │ ┌───┐
+     * │   │ ├─────┼─────┼─────┼─────┼─────┤ │ │ │ │ ├─────┼─────┼─────┼─────┼─────┤ │   │
+     * │   │ │     │     │     │     │     │ │ │ │ │ │     │ Cmd │ Ctl │Shift│█████│ │   │
+     * └───┘ ├─────┼─────┼─────┼─────┼─────┤ └─┘ └─┘ ├─────┼─────┼─────┼─────┼─────┤ └───┘
+     *       │     │     │     │     │     │           │     │     │     │     │     │
+     *       └─────┴─────┴─────┴─────┴─────┘           └─────┴─────┴─────┴─────┴─────┘
+     *                   ┌─────┬─────┬─────┐           ┌─────┬─────┬─────┐
+     *                   │     │     │     │           │     │     │     │
+     *                   └─────┴─────┴─────┘           └─────┴─────┴─────┘
+     */
+    [_RMOD] = LAYOUT_split_3x6_3_ex2(
+        _x_,  KC_TAB,  _______, _______, _______, _______, _x_,        _x_,     _______, _______, _______, _______, _______, _x_,
+        _x_,  _______, _______, _______, _______, _______, _x_,        _x_,     _______, KC_RGUI, KC_RCTL, KC_RSFT, _______, _x_,
+        _x_,  _______, _______, _______, _______, _______,                       _______, _______, _______, _______, _______, _x_,
+                                          _x_,  _______, _______,       _______, _______, _x_
+    )
 };
-#else
-// Standard layout without extra keys would go here
-const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-  // Add standard 3x6_3 layout here if needed
-};
-#endif
-
-bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    if (!process_smtd(keycode, record)) {
-        return false;
-    }
-    switch (keycode) {
-        case CAPS_TOGGLE:
-            if (record->event.pressed) {
-                tap_code(KC_CAPS);
-            }
-            return false;
-    }
-    return true;
-}
-
-void on_smtd_action(uint16_t keycode, smtd_action action, uint8_t tap_count) {
-    switch (keycode) {
-        SMTD_MT(CKC_Q, KC_Q, KC_LEFT_ALT)
-        SMTD_MT(CKC_1, KC_1, KC_LEFT_ALT)
-        SMTD_MT(CKC_W, KC_W, KC_LEFT_SHIFT)
-        SMTD_MT(CKC_2, KC_2, KC_LEFT_SHIFT)
-        SMTD_MT(CKC_E, KC_E, KC_LEFT_CTRL)
-        SMTD_MT(CKC_3, KC_3, KC_LEFT_CTRL)
-        SMTD_MT(CKC_R, KC_R, KC_LEFT_GUI)
-        SMTD_MT(CKC_4, KC_4, KC_LEFT_GUI)
-        SMTD_MT(CKC_P, KC_P, KC_RIGHT_ALT)
-        SMTD_MT(CKC_0, KC_0, KC_RIGHT_ALT)
-        SMTD_MT(CKC_O, KC_O, KC_RIGHT_SHIFT)
-        SMTD_MT(CKC_9, KC_9, KC_RIGHT_SHIFT)
-        SMTD_MT(CKC_I, KC_I, KC_RIGHT_CTRL)
-        SMTD_MT(CKC_8, KC_8, KC_RIGHT_CTRL)
-        SMTD_MT(CKC_U, KC_U, KC_RIGHT_GUI)
-        SMTD_MT(CKC_7, KC_7, KC_RIGHT_GUI)
-    }
-}
+// clang-format on
 
 #ifdef ENCODER_MAP_ENABLE
 const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
-  [_BASE]   = { ENCODER_CCW_CW(RGB_MOD, RGB_RMOD), ENCODER_CCW_CW(RGB_HUI, RGB_HUD), ENCODER_CCW_CW(RGB_VAI, RGB_VAD), ENCODER_CCW_CW(RGB_SAI, RGB_SAD) },
-  [_LAYER1] = { ENCODER_CCW_CW(RGB_MOD, RGB_RMOD), ENCODER_CCW_CW(RGB_HUI, RGB_HUD), ENCODER_CCW_CW(RGB_VAI, RGB_VAD), ENCODER_CCW_CW(RGB_SAI, RGB_SAD) },
-  [_LAYER2] = { ENCODER_CCW_CW(RGB_MOD, RGB_RMOD), ENCODER_CCW_CW(RGB_HUI, RGB_HUD), ENCODER_CCW_CW(RGB_VAI, RGB_VAD), ENCODER_CCW_CW(RGB_SAI, RGB_SAD) },
-  [_LAYER3] = { ENCODER_CCW_CW(RGB_MOD, RGB_RMOD), ENCODER_CCW_CW(RGB_HUI, RGB_HUD), ENCODER_CCW_CW(RGB_VAI, RGB_VAD), ENCODER_CCW_CW(RGB_SAI, RGB_SAD) },
+    [_BASE]      = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU), ENCODER_CCW_CW(KC_MPRV, KC_MNXT), ENCODER_CCW_CW(KC_VOLD, KC_VOLU), ENCODER_CCW_CW(KC_MPRV, KC_MNXT) },
+    [_MEDIA_NAV] = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU), ENCODER_CCW_CW(KC_MPRV, KC_MNXT), ENCODER_CCW_CW(KC_VOLD, KC_VOLU), ENCODER_CCW_CW(KC_MPRV, KC_MNXT) },
+    [_NUMBERS]   = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU), ENCODER_CCW_CW(KC_MPRV, KC_MNXT), ENCODER_CCW_CW(KC_VOLD, KC_VOLU), ENCODER_CCW_CW(KC_MPRV, KC_MNXT) },
+    [_SYMBOLS]   = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU), ENCODER_CCW_CW(KC_MPRV, KC_MNXT), ENCODER_CCW_CW(KC_VOLD, KC_VOLU), ENCODER_CCW_CW(KC_MPRV, KC_MNXT) },
+    [_RMOD]      = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU), ENCODER_CCW_CW(KC_MPRV, KC_MNXT), ENCODER_CCW_CW(KC_VOLD, KC_VOLU), ENCODER_CCW_CW(KC_MPRV, KC_MNXT) },
 };
 #endif
